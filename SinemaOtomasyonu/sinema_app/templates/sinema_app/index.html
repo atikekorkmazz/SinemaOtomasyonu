@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Filmler | ACK Cineverse</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #ff0000; --bg: #0a0a0a; --card: #141414; --text: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        
+        /* --- HEADER (ÜST MENÜ) --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #222;
+        }
+
+        .user-greeting { font-size: 15px; font-weight: 300; color: #888; }
+        .user-greeting span { color: var(--primary); font-weight: bold; text-transform: capitalize; }
+
+        /* --- LOGO VE ÇERÇEVE --- */
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            position: relative;
+            padding: 5px 20px;
+        }
+        .logo-shape {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid transparent;
+            border-left: 3px solid var(--primary);
+            border-top: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+            border-radius: 50px 0 0 50px;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 5px var(--primary));
+        }
+        .logo { 
+            margin: 0; 
+            letter-spacing: 4px; 
+            font-size: 22px; 
+            font-weight: 800; 
+            text-decoration: none; 
+            color: white; 
+            z-index: 1;
+        }
+        .logo span { color: var(--primary); }
+
+        /* SEPET BUTONU */
+        .cart-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            border: 1px solid #333;
+            transition: 0.3s all ease;
+            text-decoration: none;
+        }
+        .cart-container:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        .cart-icon { color: white; font-size: 18px; transition: 0.3s; }
+        .cart-container:hover .cart-icon { color: var(--primary); }
+        .cart-badge {
+            position: absolute; top: -5px; right: -5px; background: var(--primary);
+            color: white; font-size: 10px; width: 18px; height: 18px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
+            border: 2px solid var(--bg);
+        }
+
+        /* --- DİĞER STİLLER --- */
+        .main-content { padding: 30px; }
+        .date-container { display: flex; gap: 12px; margin-bottom: 40px; justify-content: center; }
+        .date-box { 
+            background: #1a1a1a; border: 1px solid #333; color: #888; padding: 10px 20px; 
+            border-radius: 8px; text-align: center; cursor: pointer; transition: 0.3s; min-width: 85px;
+        }
+        .date-box span { display: block; font-weight: bold; font-size: 15px; }
+        .date-box.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 15px rgba(255,0,0,0.3); }
+
+        .movie-list-container { max-width: 1100px; margin: 0 auto; }
+        .movie-card { 
+            background: var(--card); border-radius: 12px; margin-bottom: 30px; display: flex; 
+            padding: 25px; gap: 30px; border: 1px solid #222; transition: all 0.3s ease; 
+            position: relative; overflow: hidden;
+        }
+        .movie-card:hover { border-color: #444; transform: translateX(10px); }
+        .movie-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--primary); box-shadow: 2px 0 15px var(--primary); transition: width 0.3s ease; }
+        .movie-card:hover::before { width: 6px; }
+
+        .movie-poster { width: 220px; border-radius: 8px; object-fit: cover; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .movie-info { flex: 1; }
+        .movie-title { font-size: 28px; font-weight: bold; margin: 0; color: var(--primary); }
+        .movie-genre { font-size: 15px; color: #ffcc00; margin: 8px 0 15px 0; font-style: italic; }
+        .movie-meta { font-size: 13px; color: #888; margin-bottom: 25px; border-bottom: 1px solid #222; padding-bottom: 15px; }
+        
+        .session-group { margin-bottom: 15px; display: flex; align-items: center; gap: 20px; }
+        .session-label { min-width: 100px; font-weight: bold; color: #bbb; font-size: 13px; letter-spacing: 1px; }
+        .time-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+        .time-btn { 
+            background: #222; border: 1px solid #333; padding: 10px 20px; border-radius: 6px; 
+            color: white; text-decoration: none; font-weight: bold; font-size: 15px; transition: 0.2s; 
+        }
+        .time-btn:hover { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
+
+        /* DROPDOWN STİLİ */
+        .user-panel { display: flex; align-items: center; gap: 15px; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #1a1a1a;
+            min-width: 150px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+            z-index: 1001;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin-top: 10px;
+        }
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            transition: 0.3s;
+            text-align: center;
+        }
+        .dropdown-content a:hover { background-color: #222; color: var(--primary); }
+        .show { display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="user-greeting">
+            Ne izlemek istersin, <span>{{ request.session.kullanici_ad|default:"Misafir" }}</span>?
+        </div>
+        
+        <a href="/" class="logo-wrap">
+            <div class="logo-shape"></div>
+            <div class="logo">ACK <span>CINEVERSE</span></div>
+        </a>
+
+        <div class="user-panel">
+            {% if request.session.kullanici_ad %}
+                <div class="dropdown">
+                    <button onclick="toggleDropdown()" style="background: #1a1a1a; color: white; border: 1px solid #333; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-user-circle" style="color: var(--primary);"></i>
+                        {{ request.session.kullanici_ad }}
+                        <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+                    </button>
+                    <div id="myDropdown" class="dropdown-content">
+                        <a href="/cikis-yap/" style="color: #ff0000;"><i class="fas fa-sign-out-alt"></i> ÇIKIŞ YAP</a>
+                    </div>
+                </div>
+            {% else %}
+                <a href="/login/" style="color: white; text-decoration: none; background: #ff0000; padding: 8px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; box-shadow: 0 0 10px rgba(255,0,0,0.2);">
+                    GİRİŞ YAP
+                </a>
+            {% endif %}
+
+            <a href="/sepet/" class="cart-container">
+                <i class="fas fa-shopping-basket cart-icon"></i>
+                <span class="cart-badge">0</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="date-container" id="date-picker">
+            {% for tarih in tarihler %}
+                <a href="?tarih={{ tarih.full_date }}" style="text-decoration: none;">
+                    <div class="date-box {% if tarih.is_active %}active{% endif %}">
+                        <span>{{ tarih.gun_ay }}</span>
+                        {% if tarih.is_today %}Bugün{% else %}{{ tarih.gun_adi }}{% endif %}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+
+        <div class="movie-list-container">
+            {% for film in filmler %}
+            <div class="movie-card">
+                <img src="{{ film.afis }}" class="movie-poster" onerror="this.src='https://via.placeholder.com/220x330?text=Afis+Yok'">
+                <div class="movie-info">
+                    <h2 class="movie-title">{{ film.ad }}</h2>
+                    <div class="movie-genre">🎬 {{ film.tur }}</div>
+                    <p class="movie-meta"><i class="far fa-calendar-alt"></i> {{ film.meta }}</p>
+                    <div class="session-group">
+                        <div class="session-label">DUBLAJLI</div>
+                        <div class="time-buttons">
+                            {% for seans in film.dublaj %}
+                                <a href="/gise/?seans_id={{ seans.id }}" class="time-btn">{{ seans.saat }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="session-group">
+                        <div class="session-label">ALTYAZILI</div>
+                        <div class="time-buttons">
+                            {% for seans in film.altyazi %}
+                                <a href="/gise/?seans_id={{ seans.id }}" class="time-btn">{{ seans.saat }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p style="text-align: center; color: #888;">Henüz vizyonda aktif bir seans bulunmuyor.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // --- SEPET SAYACINI GÜNCELLEME KODU ---
+        function sepetSayaciniGuncelle() {
+            const kullaniciID = "{{ request.session.kullanici_id|default:'misafir' }}";
+            const sepetKey = 'ack_sepet_' + kullaniciID;
+            const sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
+            const badge = document.querySelector('.cart-badge');
+            if (badge) {
+                badge.innerText = sepet.length;
+            }
+        }
+        window.addEventListener('load', sepetSayaciniGuncelle);
+
+        // --- DROPDOWN KONTROLÜ ---
+        function toggleDropdown() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+        window.onclick = function(event) {
+            if (!event.target.matches('button') && !event.target.matches('.fa-user-circle') && !event.target.matches('.fa-chevron-down')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

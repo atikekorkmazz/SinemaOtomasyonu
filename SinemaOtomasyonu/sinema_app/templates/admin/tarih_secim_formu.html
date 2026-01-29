@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    <h3>Seçili Seanslar Belirtilen Aralığa Kopyalanacak:</h3>
+    <ul>
+        {% for item in items %}
+            <li>{{ item.FilmID }} - {{ item.Saat }} (Kaynak Tarih: {{ item.Tarih }})</li>
+            <input type="hidden" name="_selected_action" value="{{ item.pk }}" />
+        {% endfor %}
+    </ul>
+    
+    <div style="background:#222; padding:20px; border-radius:10px;">
+        {{ form.as_p }}
+    </div>
+
+    <input type="hidden" name="action" value="toplu_seans_kopyala" />
+    <input type="submit" name="apply" value="Seansları Oluştur" style="background:red; color:white; padding:10px 20px; cursor:pointer; margin-top:10px;"/>
+</form>
+{% endblock %}

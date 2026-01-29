@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sepetim | ACK Cineverse</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #ff0000; --bg: #0a0a0a; --card: #141414; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
+
+        /* HEADER & LOGO */
+        header { 
+            display: flex; justify-content: center; align-items: center; 
+            padding: 30px; position: relative; border-bottom: 1px solid #222;
+        }
+
+        /* --- LOGO VE ÇERÇEVE --- */
+        .logo-wrap {
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; position: relative; padding: 5px 20px;
+        }
+        .logo-shape {
+            position: absolute; left: 0; width: 100%; height: 100%;
+            border: 2px solid transparent; border-left: 3px solid var(--primary);
+            border-top: 2px solid var(--primary); border-bottom: 2px solid var(--primary);
+            border-radius: 50px 0 0 50px; opacity: 0.9; filter: drop-shadow(0 0 5px var(--primary));
+        }
+        .logo { font-size: 26px; font-weight: 900; letter-spacing: 3px; text-decoration: none; color: white; z-index: 1; }
+        .logo span { color: var(--primary); }
+
+        /* GERİ DÖN BUTONU */
+        .back-btn {
+            position: absolute; left: 40px; color: #888; text-decoration: none;
+            font-weight: bold; font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+        .back-btn:hover { color: var(--primary); transform: translateX(-5px); }
+
+        .sepet-container { max-width: 900px; margin: 50px auto; padding: 0 20px; }
+        .sepet-header { font-size: 24px; font-weight: 800; margin-bottom: 30px; border-left: 4px solid var(--primary); padding-left: 15px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* SEPET KARTI */
+        .sepet-card { background: var(--card); border-radius: 12px; padding: 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; position: relative; }
+        .movie-name { color: var(--primary); font-size: 22px; font-weight: bold; margin-bottom: 8px; }
+        .movie-details { color: #888; font-size: 14px; line-height: 1.6; }
+        .price-box { text-align: right; }
+        .price-tag { font-size: 20px; font-weight: 800; display: block; margin-bottom: 15px; }
+        .btn-remove { background: transparent; color: #555; border: 1px solid #333; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 12px; font-weight: bold; }
+        .btn-remove:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* ÖZET VE ÖDEME */
+        .summary-section { margin-top: 50px; padding: 30px; border-top: 1px solid #222; display: flex; flex-direction: column; align-items: flex-end; }
+        .total-row { display: flex; justify-content: space-between; width: 100%; max-width: 300px; margin-bottom: 20px; }
+        .total-amount { font-size: 32px; font-weight: 900; color: var(--primary); }
+        .btn-checkout { width: 100%; max-width: 400px; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 900; font-size: 18px; cursor: pointer; transition: 0.3s; }
+        .btn-checkout:hover { box-shadow: 0 0 25px var(--primary); transform: translateY(-2px); }
+
+        /* ÖDEME MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content { background: #111; padding: 40px; border-radius: 20px; border: 1px solid #333; width: 100%; max-width: 400px; text-align: center; }
+        .modal-input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: white; border-radius: 8px; outline: none; box-sizing: border-box; }
+        .modal-input:focus { border-color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> FİLMLERE DÖN</a>
+    <a href="/" class="logo-wrap">
+        <div class="logo-shape"></div>
+        <div class="logo">ACK <span>CINEVERSE</span></div>
+    </a>
+</header>
+
+<div class="sepet-container">
+    <div class="sepet-header">SEPETİM</div>
+    <div id="sepet-listesi"></div>
+
+    <div class="summary-section">
+        <div class="total-row">
+            <span style="color:#666; font-weight:bold;">Toplam Ödenecek:</span>
+            <span id="genel-toplam" class="total-amount">0.00 TL</span>
+        </div>
+        <button class="btn-checkout" onclick="odemeyiBaslat()">ÖDEME ADIMINA GEÇ</button>
+    </div>
+</div>
+
+<div id="odeme-modal" class="modal-overlay">
+    <div class="modal-content" id="modal-inner">
+        <h2 style="color:var(--primary); margin-bottom:20px;">KART BİLGİLERİ</h2>
+        <input type="text" class="modal-input" placeholder="Kart Üzerindeki İsim">
+        <input type="text" class="modal-input" placeholder="0000 0000 0000 0000">
+        <div style="display:flex; gap:10px;">
+            <input type="text" class="modal-input" placeholder="AA/YY">
+            <input type="text" class="modal-input" placeholder="CVV">
+        </div>
+        <button onclick="odemeyiOnayla()" class="btn-checkout" style="margin-top:20px; padding:15px;">ÖDEME YAP</button>
+        <p onclick="document.getElementById('odeme-modal').style.display='none'" style="margin-top:20px; color:#555; cursor:pointer; font-size:14px;">İptal Et</p>
+    </div>
+</div>
+
+<script>
+    // --- KRİTİK DEĞİŞİKLİK: KULLANICIYA ÖZEL ANAHTAR ---
+    const kullaniciID = "{{ request.session.kullanici_id|default:'misafir' }}";
+    const sepetKey = 'ack_sepet_' + kullaniciID;
+
+    function renderSepet() {
+        // Artık sadece bu kullanıcıya ait sepetKey okunuyor
+        const sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
+        const container = document.getElementById('sepet-listesi');
+        let total = 0;
+
+        if (sepet.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:80px; color:#444; font-weight:bold;">SEPETİNİZ ŞU AN BOŞ.</div>';
+            document.getElementById('genel-toplam').innerText = "0.00 TL";
+            return;
+        }
+
+        container.innerHTML = sepet.map((item, index) => {
+            total += parseFloat(item.fiyat);
+            return `
+                <div class="sepet-card">
+                    <div>
+                        <div class="movie-name">${item.film_ad}</div>
+                        <div class="movie-details">
+                            <span style="color:gold">🎬 ${item.film_tur}</span><br>
+                            <b>Koltuk:</b> ${item.koltuk_ad} | <b>Seans:</b> ${item.seans_saat} <span style="color:#666">(${item.tip})</span>
+                        </div>
+                    </div>
+                    <div class="price-box">
+                        <span class="price-tag">${item.fiyat} TL</span>
+                        <button class="btn-remove" onclick="removeTicket(${index})">
+                            <i class="fas fa-trash-alt"></i> ÇIKAR
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        document.getElementById('genel-toplam').innerText = total.toFixed(2) + " TL";
+    }
+
+    function removeTicket(index) {
+        let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
+        sepet.splice(index, 1);
+        localStorage.setItem(sepetKey, JSON.stringify(sepet));
+        renderSepet();
+    }
+
+    function odemeyiBaslat() {
+        const girisYaptiMi = "{{ giris_yapti_mi }}"; 
+
+        if (girisYaptiMi === "False") {
+            alert("Bilet alabilmek için lütfen giriş yapın veya kayıt olun!");
+            window.location.href = "/login/"; 
+            return;
+        }
+
+        const sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
+        if (sepet.length === 0) return alert("Sepetiniz boş!");
+        document.getElementById('odeme-modal').style.display = 'flex';
+    }
+
+    function odemeyiOnayla() {
+        const sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
+        const pnr = "ACK" + Math.random().toString(36).substr(2, 5).toUpperCase();
+
+        fetch('/odeme-yap/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sepet: sepet })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('modal-inner').innerHTML = `
+                    <i class="fas fa-check-circle" style="font-size:60px; color:#00ff00;"></i>
+                    <h2 style="margin-top:20px;">ÖDEME BAŞARILI</h2>
+                    <p style="color:#888;">Bilet PNR Kodunuz:</p>
+                    <h1 style="color:var(--primary); letter-spacing:8px; font-size:40px; margin:10px 0;">${pnr}</h1>
+                    <p style="color:#555; font-size:12px;">Bu kodu gişede kullanabilirsiniz.</p>
+                    <button onclick="window.location.href='/'" class="btn-checkout" style="margin-top:30px; padding:15px; font-size:14px;">ANA SAYFAYA DÖN</button>
+                `;
+                localStorage.removeItem(sepetKey); // Sadece bu kullanıcının sepeti silinir
+            } else {
+                alert("Hata oluştu: " + data.message);
+            }
+        })
+        .catch(err => alert("Sunucu hatası!"));
+    }
+
+    window.onload = renderSepet;
+</script>
+
+</body>
+</html>

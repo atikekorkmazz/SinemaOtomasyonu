@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>ACK Cineverse | Gişe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #ff0000; --bg: #0a0a0a; --card: #141414; --blue: #3498db; --gray: #333; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        
+        /* --- HEADER GÜNCELLENDİ --- */
+        header { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            position: relative; 
+            padding: 10px 40px;
+        }
+
+        /* GERİ DÖN BUTONU (YENİ) */
+        .back-btn {
+            position: absolute; 
+            left: 40px; 
+            color: #888; 
+            text-decoration: none;
+            font-weight: bold; 
+            font-size: 14px; 
+            transition: 0.3s; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            z-index: 10;
+        }
+        .back-btn:hover { color: var(--primary); transform: translateX(-5px); }
+
+        .logo-wrap { display: flex; align-items: center; text-decoration: none; position: relative; padding: 5px 25px; }
+        .logo-shape { position: absolute; left: 0; width: 100%; height: 100%; border: 2px solid transparent; border-left: 4px solid var(--primary); border-top: 2px solid var(--primary); border-bottom: 2px solid var(--primary); border-radius: 100px 0 0 100px; filter: drop-shadow(0 0 8px var(--primary)); }
+        .logo-text { color: white; font-size: 26px; font-weight: 900; letter-spacing: 2px; z-index: 1; margin-left: 10px; }
+        .logo-text span { color: var(--primary); }
+
+        .container { max-width: 1200px; margin: auto; display: flex; gap: 40px; align-items: flex-start; }
+        
+        /* SALON PLANI */
+        .salon-section { flex: 1.5; background: var(--card); padding: 40px; border-radius: 20px; text-align: center; border: 1px solid #222; }
+        .perde { width: 80%; height: 4px; background: #555; margin: 0 auto 60px; border-radius: 10px; }
+        
+        .koltuk-duzeni { display: grid; grid-template-columns: repeat(10, 1fr); gap: 12px; justify-content: center; max-width: 550px; margin: 0 auto; }
+        
+        .koltuk { width: 42px; height: 42px; background: var(--gray); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #fff; border: 1px solid #444; transition: 0.3s; }
+        
+        /* KOLTUK RENKLERİ */
+        .koltuk.dolu { background: var(--primary) !important; cursor: not-allowed; border-color: #800; opacity: 0.8; }
+        .koltuk.secili { background: var(--blue) !important; border-color: #fff; box-shadow: 0 0 15px var(--blue); }
+        
+        /* SAĞ PANEL */
+        .panel-section { flex: 1; background: var(--card); padding: 30px; border-radius: 20px; border-top: 4px solid var(--primary); position: sticky; top: 20px; }
+        
+        .secilen-item { 
+            background: #1a1a1a; 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 15px; 
+            border: 2px solid var(--primary); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+        .secilen-item:hover { box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); transform: scale(1.02); }
+
+        .item-header { display: flex; justify-content: space-between; font-weight: bold; }
+        select { width: 100%; background: #333; color: white; border: 1px solid #555; padding: 8px; border-radius: 5px; cursor: pointer; }
+        
+        .toplam-box { 
+            margin-top: 30px; 
+            padding-top: 20px; 
+            border-top: 1px solid #333; 
+            font-size: 24px; 
+            font-weight: 900; 
+            display: flex; 
+            justify-content: space-between; 
+            color: var(--primary); 
+        }
+
+        .btn-onay { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 18px; }
+        
+        .legend { display: flex; justify-content: center; gap: 20px; margin-top: 40px; font-size: 13px; color: #888; }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .legend-box { width: 15px; height: 15px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> FİLMLERE DÖN</a>
+    
+    <div class="logo-wrap">
+        <div class="logo-shape"></div>
+        <div class="logo-text"><span>ACK</span>CINEVERSE</div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="salon-section">
+        <div class="perde">PERDE / EKRAN</div>
+        <div class="koltuk-duzeni" id="salon-plani"></div>
+        
+        <div class="legend">
+            <div class="legend-item"><div class="legend-box" style="background:var(--gray)"></div> Boş</div>
+            <div class="legend-item"><div class="legend-box" style="background:var(--blue)"></div> Seçilen</div>
+            <div class="legend-item"><div class="legend-box" style="background:var(--primary)"></div> Dolu</div>
+        </div>
+    </div>
+
+    <div class="panel-section">
+        <div style="margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 15px;">
+            <h2 class="movie-title" style="margin:0; color:var(--primary); font-size: 22px;">{{ seans_bilgisi.FilmAd }}</h2>
+            <div style="margin-top: 8px; font-size: 14px; color: #888;">
+                🎬 <span class="movie-genre">{{ seans_bilgisi.Tur }}</span> | 
+                <i class="far fa-clock"></i> <span class="session-time">{{ seans_bilgisi.Saat|time:"H:i" }}</span>
+            </div>
+        </div>
+
+        <h3 style="margin-top:0; color: #666; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">SEÇİLEN KOLTUKLAR</h3>
+        <div id="secim-listesi">
+            <p style="color:#555; text-align: center; padding: 40px;">Lütfen koltuk seçimi yapınız.</p>
+        </div>
+
+        <div class="toplam-box">
+            <span>TOPLAM:</span>
+            <span id="toplam-tutar" style="color: #fff;">0 TL</span>
+        </div>
+        <button class="btn-onay" onclick="sepeteEkle()">SEPETE EKLE</button>
+    </div>
+</div>
+
+<script>
+    let seciliKoltuklar = []; 
+    const fiyatlar = { "Tam": 150, "Ogrenci": 100 };
+
+    // Django verileri
+    const tumKoltuklar = JSON.parse('{{ tum_koltuklar_json|safe|default:"[]" }}');
+    const doluListesi = JSON.parse('{{ dolu_koltuklar_json|safe|default:"[]" }}');
+    const seansID = "{{ seans_id }}";
+
+    const plan = document.getElementById('salon-plani');
+    
+    if (tumKoltuklar.length > 0) {
+        plan.innerHTML = ''; 
+        tumKoltuklar.forEach(k => {
+            const isDolu = doluListesi.includes(k[0]);
+            const koltukDiv = document.createElement('div');
+            koltukDiv.className = `koltuk ${isDolu ? 'dolu' : ''}`;
+            koltukDiv.innerText = `${k[1]}${k[2]}`;
+            
+            if (!isDolu) {
+                koltukDiv.onclick = () => koltukTikla(koltukDiv, k[0], `${k[1]}${k[2]}`);
+            }
+            plan.appendChild(koltukDiv);
+        });
+    }
+
+    function koltukTikla(el, id, ad) {
+        const index = seciliKoltuklar.findIndex(item => item.id === id);
+        if (index > -1) {
+            el.classList.remove('secili');
+            seciliKoltuklar.splice(index, 1);
+        } else {
+            el.classList.add('secili');
+            seciliKoltuklar.push({ id: id, ad: ad, tip: 'Tam', fiyat: fiyatlar['Tam'] });
+        }
+        arayuzGuncelle();
+    }
+
+    function arayuzGuncelle() {
+        const listeEl = document.getElementById('secim-listesi');
+        let toplam = 0;
+
+        if (seciliKoltuklar.length === 0) {
+            listeEl.innerHTML = '<p style="color:#555; text-align: center; padding: 40px;">Lütfen koltuk seçimi yapınız.</p>';
+            document.getElementById('toplam-tutar').innerText = '0 TL';
+            return;
+        }
+
+        listeEl.innerHTML = '';
+        seciliKoltuklar.forEach(item => {
+            toplam += item.fiyat;
+            listeEl.innerHTML += `
+                <div class="secilen-item">
+                    <div class="item-header">
+                        <span>Koltuk ${item.ad}</span>
+                        <span>${item.fiyat} TL</span>
+                    </div>
+                    <select onchange="tipDegistir(${item.id}, this.value)">
+                        <option value="Tam" ${item.tip === 'Tam' ? 'selected' : ''}>Tam (150 TL)</option>
+                        <option value="Ogrenci" ${item.tip === 'Ogrenci' ? 'selected' : ''}>Öğrenci (100 TL)</option>
+                    </select>
+                </div>`;
+        });
+        document.getElementById('toplam-tutar').innerText = toplam + ' TL';
+    }
+
+    function tipDegistir(id, yeniTip) {
+        const item = seciliKoltuklar.find(i => i.id === id);
+        if (item) {
+            item.tip = yeniTip;
+            item.fiyat = fiyatlar[yeniTip];
+            arayuzGuncelle();
+        }
+    }
+
+    function sepeteEkle() {
+        if (seciliKoltuklar.length === 0) return alert("Lütfen koltuk seçin!");
+        
+        const kullaniciID = "{{ request.session.kullanici_id|default:'misafir' }}";
+        const sepetKey = 'ack_sepet_' + kullaniciID;
+        
+        let sepet = JSON.parse(localStorage.getItem(sepetKey)) || [];
+
+        for (let k of seciliKoltuklar) {
+            let zatenVarMi = sepet.some(item => item.koltuk_ad === k.ad && item.seans_saat === document.querySelector('.session-time')?.innerText);
+            if (zatenVarMi) {
+                alert("Bu koltuklardan biri zaten sepetinizde bulunuyor!");
+                return;
+            }
+        }
+        
+        let s_id = "{{ seans_id }}"; 
+        let filmAdi = document.querySelector('.movie-title')?.innerText || "Film Bilgisi Yok";
+        let seansSaati = document.querySelector('.session-time')?.innerText || "Saat Belirtilmedi";
+        let filmTuru = document.querySelector('.movie-genre')?.innerText || "";
+
+        seciliKoltuklar.forEach(k => {
+            sepet.push({
+                id: k.id,
+                seans_id: s_id,
+                film_ad: filmAdi,
+                film_tur: filmTuru,
+                koltuk_ad: k.ad,
+                fiyat: k.fiyat,
+                tip: k.tip, 
+                seans_saat: seansSaati
+            });
+        });
+        
+        localStorage.setItem(sepetKey, JSON.stringify(sepet));
+        window.location.href = "/sepet/";
+    }
+</script>
+</body>
+</html>
