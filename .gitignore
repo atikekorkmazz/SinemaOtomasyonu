@@ -1,4 +1,15 @@
-bin/
-obj/
-.vs/
-*.user
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.env
+
+# Django
+db.sqlite3
+
+# OS / editor
+.DS_Store
+.vscode/
