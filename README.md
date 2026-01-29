@@ -40,7 +40,7 @@ Kullanılan veritabanı ve bağlantı kütüphaneleri:
 ---
 
 ## 3️ Proje Klasör Yapısı
-
+```
 SinemaOtomasyonu/
 ├── SinemaOtomasyonu_VeriTabani.sql
 ├── docs/
@@ -61,7 +61,7 @@ SinemaOtomasyonu/
 │ ├── views.py
 │ └── ...
 └── Veritabani_SQL/
-
+```
 `Veritabani_SQL` klasörü içerisinde:
 
 - Tablolar  
